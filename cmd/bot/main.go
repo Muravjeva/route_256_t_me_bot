@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Muravjeva/route_256_t_me_bot/internal/app/commands"
 	"github.com/Muravjeva/route_256_t_me_bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
@@ -31,7 +32,7 @@ func main() {
 
 	productService := product.NewService()
 
-	commander := NewCommander(bot, productService)
+	commander := commands.NewCommander(bot, productService)
 
 	for update := range updates {
 		if update.Message == nil {
@@ -66,41 +67,4 @@ func main() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote: "+update.Message.Text)
 		bot.Send(msg)
 	}
-}
-
-type Commander struct {
-	bot            *tgbotapi.BotAPI
-	productService *product.Service
-}
-
-func NewCommander(bot *tgbotapi.BotAPI,
-	productService *product.Service) *Commander {
-	return &Commander{
-		bot:            bot,
-		productService: productService,
-	}
-}
-
-func (c *Commander) Help(inputMssage *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(inputMssage.Chat.ID,
-		"/help - help\n"+
-			"/list - list products")
-	c.bot.Send(msg)
-}
-
-func (c *Commander) List(inputMssage *tgbotapi.Message) {
-	outputMsgText := "All products: \n\n"
-	products := c.productService.List()
-	for _, p := range products {
-		outputMsgText += p.Title
-		outputMsgText += "\n"
-	}
-	msg := tgbotapi.NewMessage(inputMssage.Chat.ID, outputMsgText)
-	c.bot.Send(msg)
-}
-
-func (c *Commander) Default(inputMssage *tgbotapi.Message) {
-	log.Printf("[%s] %s", inputMssage.From.UserName, inputMssage.Text)
-	msg := tgbotapi.NewMessage(inputMssage.Chat.ID, "You wrote: "+inputMssage.Text)
-	c.bot.Send(msg)
 }
