@@ -26,24 +26,31 @@ func (c *Commander) HandleUpdate(update tgbotapi.Update) {
 		}
 	}()
 
+	if update.CallbackQuery != nil {
+		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID,
+			"Data: "+update.CallbackQuery.Data)
+		c.bot.Send(msg)
+		return
+	}
+
 	if update.Message == nil {
 		return
 	}
 
 	if update.Message.IsCommand() {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		//msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 		switch update.Message.Command() {
 		case "help":
 			c.Help(update.Message)
-		case "sayhi":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
-		case "withArgument":
-			msg.Text = "You supplied the following argument: " + update.Message.CommandArguments()
-		case "html":
-			msg.ParseMode = "html"
-			msg.Text = "This will be interpreted as HTML, click <a href=\"https://www.example.com\">here</a>"
+		//case "sayhi":
+		//	msg.Text = "Hi :)"
+		//case "status":
+		//	msg.Text = "I'm ok."
+		//case "withArgument":
+		//	msg.Text = "You supplied the following argument: " + update.Message.CommandArguments()
+		//case "html":
+		//	msg.ParseMode = "html"
+		//	msg.Text = "This will be interpreted as HTML, click <a href=\"https://www.example.com\">here</a>"
 		case "list":
 			c.List(update.Message)
 		case "get":
