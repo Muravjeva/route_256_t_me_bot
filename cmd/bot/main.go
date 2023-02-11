@@ -10,6 +10,11 @@ import (
 )
 
 func main() {
+	defer func() {
+		if panicValue := recover(); panicValue != nil {
+			log.Printf("recovered from panic: %v", panicValue)
+		}
+	}()
 	godotenv.Load()
 	token := os.Getenv("TOKEN")
 	bot, err := tgbotapi.NewBotAPI(token)
@@ -57,6 +62,8 @@ func main() {
 				msg.Text = "This will be interpreted as HTML, click <a href=\"https://www.example.com\">here</a>"
 			case "list":
 				commander.List(update.Message)
+			case "get":
+				commander.Get(update.Message)
 			default:
 				commander.Default(update.Message)
 			}
